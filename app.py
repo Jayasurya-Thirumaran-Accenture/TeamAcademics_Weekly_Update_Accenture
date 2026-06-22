@@ -66,11 +66,16 @@ else:
                     responses_df = get_responses(selected_session_id)
                     render_feedback_cards(responses_df)
 
-# Admin section — collapsible, at the bottom
+# Admin section — password protected
 st.divider()
 with st.expander("⚙ Admin", expanded=False):
-    admin_tab_upload, admin_tab_programs = st.tabs(["Upload Session Data", "Manage Programs"])
-    with admin_tab_upload:
-        render_upload_section()
-    with admin_tab_programs:
-        render_program_manager()
+    pwd = st.text_input("Admin password", type="password", key="admin_pwd")
+    if pwd:
+        if pwd == st.secrets.get("admin", {}).get("password", ""):
+            admin_tab_upload, admin_tab_programs = st.tabs(["Upload Session Data", "Manage Programs"])
+            with admin_tab_upload:
+                render_upload_section()
+            with admin_tab_programs:
+                render_program_manager()
+        else:
+            st.error("Incorrect password.")
