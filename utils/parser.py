@@ -54,13 +54,20 @@ def parse_session_excel(file_bytes: bytes, programs: list[dict]) -> dict:
     try:
         wb = openpyxl.load_workbook(io.BytesIO(file_bytes), data_only=True)
     except (InvalidFileException, Exception) as e:
-        raise ValueError(f"File format not recognized. Expected Zoom session export format. ({e})")
+        raise ValueError(f"Could not open file as Excel (.xlsx). Error: {e}")
 
     ws = wb["Survey Report"] if "Survey Report" in wb.sheetnames else wb.active
     rows = list(ws.iter_rows(values_only=True))
 
-    if not rows or rows[0][0] != "Program Name":
-        raise ValueError("File format not recognized. Expected Zoom session export format.")
+    # Normalise the first cell — strip whitespace and check case-insensitively
+    first_cell = str(rows[0][0]).strip() if rows and rows[0][0] is not None else ""
+    if not rows or first_cell.lower() != "program name":
+        found = repr(first_cell) if first_cell else "empty"
+        raise ValueError(
+            f"File format not recognized. "
+            f"Expected first cell to be 'Program Name', found {found}. "
+            f"Sheet: '{ws.title}', sheets in file: {wb.sheetnames}"
+        )
 
     # Extract metadata by row position
     meta: dict = {}
