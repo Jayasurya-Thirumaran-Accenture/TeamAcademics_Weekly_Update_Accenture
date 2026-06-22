@@ -19,6 +19,7 @@ def render_rating_trend(sessions_df: pd.DataFrame) -> None:
         title="Rating Trend",
     )
     fig.update_yaxes(range=[0, 10])
+    fig.update_xaxes(tickformat="%d %b %Y", dtick="D1")
     fig.update_traces(line_color="#6366f1", marker_color="#6366f1")
     fig.update_layout(margin=dict(t=40, b=20), hovermode="x unified")
     st.plotly_chart(fig, use_container_width=True)
@@ -56,5 +57,6 @@ def render_attendance_trend(sessions_df: pd.DataFrame) -> None:
             "Responses": "#22c55e",
         },
     )
+    fig.update_xaxes(tickformat="%d %b %Y", dtick="D1")
     fig.update_layout(margin=dict(t=40, b=20))
     st.plotly_chart(fig, use_container_width=True)
